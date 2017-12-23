@@ -1,27 +1,25 @@
-org 100h
-
+			    ORG 100H
+;----------------------------START------------------------------
 	start:   
 		MOV  DX, info
 		PUSH DX
 		CALL show
-
-		MOV  DX, ent1
-		PUSH DX
-		CALL show
 		
 		CALL input
-	        CALL clear1
+		CALL clear1
 
 		MOV  DX, info
 		PUSH DX
 		CALL show
 
-		MOV  DX, ent1
+		CALL input
+		CALL clear2
+
+		MOV  DX, info1
 		PUSH DX
 		CALL show
 
-		CALL input
-    		CALL clear2
+		CALL operat
 
 ;--------------------------------Koniec---------------------------
 	koniec:
@@ -45,8 +43,9 @@ org 100h
 		INT 21H
 	
 ;--------------------------------Zmienne--------------------------
-info	 db   "Podaj liczbe.$"
+info	 db   "Podaj liczbe: $"
 progEnd  db   "Koniec.$"
+info1    db   "Podaj operacje jaka chcesz wykonac na liczbach: $"
 ent1     db   10,13,36
 st_count db   0
 temp	 dw   0
@@ -158,3 +157,12 @@ input:
             PUSH AX
  RET
 ;------------------------------------------------------------
+operat:
+	POP AX
+	MOV [sp_init], AX
+
+
+	MOV  AX, [sp_init]
+	PUSH AX
+
+RET

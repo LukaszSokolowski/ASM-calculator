@@ -1,62 +1,30 @@
 org 100h
 
-	start:
+	start:   
 		MOV  DX, info
- 		PUSH DX
+		PUSH DX
 		CALL show
 
 		MOV  DX, ent1
 		PUSH DX
 		CALL show
 		
-		MOV CX, 0
+		CALL input
+	        CALL clear1
 
-      pushloop:
-		MOV AH, 1
-		INT 21H
-		
-		CMP AL, 13
-		JE poploop
-		
-		CMP AL, 48
-		JL koniec
-		
-		CMP AL, 57
-		JG koniec
+		MOV  DX, info
+		PUSH DX
+		CALL show
 
-		INC CX
-		MOV [st_count], CX
-				
-		SUB  AL, 48
-		XOR  AH, AH
-		PUSH AX
+		MOV  DX, ent1
+		PUSH DX
+		CALL show
 
-		JMP pushloop	
+		CALL input
+    		CALL clear2
 
-		
-       poploop:
-
-		POP BX
-		XOR BH, BH
-		MOV [digit], BX
-        
-		XOR AX, AX
-		MOV AX, [mnoznik]
-		MUL BX
-        
-		ADD [temp], AX 
-        
-		MOV BX, 10
-		XOR BH, BH
-		MOV AX, [mnoznik]
-		MUL BX
-		MOV [mnoznik], AX
-	
-        loop poploop
-		
 ;--------------------------------Koniec---------------------------
 	koniec:
-
 		MOV  DX, ent1
 		PUSH DX
 		CALL show
@@ -66,7 +34,11 @@ org 100h
 		CALL show
 
 		MOV AH, 2
-		MOV DL, [temp]
+		MOV DL, [liczba1]
+		INT 21H
+
+		MOV AH, 2
+		MOV DL, [liczba2]
 		INT 21H
 		
 		MOV AX, 4C00H
@@ -82,8 +54,7 @@ liczba1  dw   0
 liczba2  dw   0	
 mnoznik  db   1
 digit    dw   0
-
-
+sp_init  dw   0
 ;-------------------------Wypisywanie-znakow-----------------------
  show:   
     	POP  AX
@@ -103,3 +74,87 @@ digit    dw   0
      showEND:
 RET
 ;------------------------------------------------------------------
+
+input:
+        POP AX
+	MOV [sp_init], AX
+	MOV CX, 0
+    
+    pushloop:
+       		MOV AH, 1
+        	INT 21H
+        
+       		CMP AL, 13
+       		JE poploop
+        
+        	CMP AL, 48
+        	JL koniec
+        
+        	CMP AL, 57
+        	JG koniec
+
+        	INC CX
+        	MOV [st_count], CX
+                
+        	SUB  AL, 48
+        	XOR  AH, AH
+        	PUSH AX
+
+        	JMP pushloop
+        
+       poploop:
+
+        	POP BX
+        	XOR BH, BH
+        	MOV [digit], BX
+        
+        	XOR AX, AX
+        	MOV AX, [mnoznik]
+        	MUL BX
+        
+        	ADD [temp], AX 
+        
+        	MOV BX, 10
+        	XOR BH, BH
+        	MOV AX, [mnoznik]
+        	MUL BX
+        	MOV [mnoznik], AX
+    
+        	loop poploop
+	
+		MOV AX, [sp_init]
+		PUSH AX
+		MOV AX, 1
+		MOV [mnoznik], AX
+		XOR AX, AX
+		XOR BX, BX
+		
+  RET
+
+;---------------------------CLEAR-1-------------------------
+  clear1:
+            POP AX
+            MOV [sp_init], AX
+
+                MOV  AX,        [temp]
+                MOV  [liczba1], AX
+                XOR  AX,        AX
+                MOV  [temp],    AX
+
+            MOV  AX, [sp_init]
+            PUSH AX
+  RET
+;---------------------------CLEAR-2-------------------------  
+  clear2:      
+            POP AX
+            MOV [sp_init], AX
+
+                MOV  AX,        [temp]
+                MOV  [liczba2], AX
+                XOR  AX,        AX
+                MOV  [temp],    AX
+
+            MOV  AX, [sp_init]
+            PUSH AX
+ RET
+;------------------------------------------------------------

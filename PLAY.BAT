@@ -1,0 +1,1 @@
+C:\nc\nasm\nasm -o wynik.com -f bin 2.asm

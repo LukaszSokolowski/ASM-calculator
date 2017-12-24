@@ -54,6 +54,8 @@ liczba2  dw   0
 mnoznik  db   1
 digit    dw   0
 sp_init  dw   0
+opChar   db   0
+result   dw   0
 ;-------------------------Wypisywanie-znakow-----------------------
  show:   
     	POP  AX
@@ -72,7 +74,7 @@ sp_init  dw   0
         	JMP showloop
      showEND:
 RET
-;------------------------------------------------------------------
+;----------------------------Wejscie----------------------------------
 
 input:
         POP AX
@@ -91,7 +93,7 @@ input:
         
         	CMP AL, 57
         	JG koniec
-
+ 
         	INC CX
         	MOV [st_count], CX
                 
@@ -160,7 +162,40 @@ input:
 operat:
 	POP AX
 	MOV [sp_init], AX
+		
+	MOV AH, 1
+	INT 21H
 
+	CMP AL, '+'
+	JE  _add
+	
+	CMP AL, '-'
+	JE  _sub
+
+	CMP AL, '*'
+	JE  _mul
+
+	CMP AL, '/'
+	JE  _div
+
+	CMP AL, ':'
+	JE  _div
+
+_add:
+
+	JMP endOper
+_sub:
+
+	JMP endOper
+_mul:
+
+	JMP endOper
+
+_div:
+	JMP endOper
+	
+	
+ endOper:	
 
 	MOV  AX, [sp_init]
 	PUSH AX

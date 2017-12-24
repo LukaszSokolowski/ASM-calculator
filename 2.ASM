@@ -48,6 +48,7 @@ info	 db   "Podaj liczbe: $"
 progEnd  db   "Dziekuje bardzo.$"
 info1    db   "Podaj operacje jaka chcesz wykonac na liczbach: $"
 info2    db   "Wynik to: $"
+info3    db   "Podano bledne dane.$"
 ent1     db   10,13,36
 st_count db   0
 temp	 dw   0
@@ -91,10 +92,10 @@ input:
        		JE poploop		;Jesli tak przejdz do zrzucania
         
         	CMP AL, 48		;Sprawdz czy mniejsze od cyfr w ascii
-        	JL koniec		;Jesli tak to koniec
+        	JL _error		;Jesli tak to koniec
         	
         	CMP AL, 57		;Sprawdz czy wieksze od znakow cyfr ascii
-        	JG koniec		;Jesli tak to koniec
+        	JG _error		;Jesli tak to koniec
  
         	INC CX			;Mamy cyfre wiec zwieksz CX
         	MOV [st_count], CX	;Przenies do zmiennej przechowujacej ilosc liczb na stosie wartosc CX
@@ -233,13 +234,13 @@ _div:
 RET
 ;--------------------------Wyswietl-wynik-----------------------------
 showRes:
-	POP AX		    ;Zdejmij ze stosu adres powrotu
+	POP AX		        ;Zdejmij ze stosu adres powrotu
 	MOV [adr_init], AX  ;Przenies adres powrotu do zmiennej
 
-    	XOR AX, AX	;Wyczysc AX
-    	XOR BX, BX	;Wyczysc BX
-    	XOR CX, CX	;Wyczysc CX
-    	XOR DX, DX	;Wyczysc DX
+    	XOR AX, AX	    ;Wyczysc AX
+    	XOR BX, BX	    ;Wyczysc BX
+    	XOR CX, CX	    ;Wyczysc CX
+    	XOR DX, DX	    ;Wyczysc DX
 
         MOV AX, [result];Przenies do AX wynik operacji
         MOV CX, 0   	;Przenies 0 do CX
@@ -267,3 +268,20 @@ showRes:
 	MOV  AX, [adr_init]
 	PUSH AX
 RET
+;-----------------------------Obsluga-bledow-----------------------------
+
+_error:
+        MOV  DX, ent1
+        PUSH DX
+        CALL show
+
+        MOV  DX, info3
+        PUSH DX
+        CALL show
+	
+	MOV  DX, ent1
+	PUSH DX
+	CALL show
+
+        JMP start
+;------------------------------------------------------------------------ 
